@@ -12,6 +12,8 @@ public class MainActivity extends AppCompatActivity {
     //实现备忘录的增删改除
 //向ListView添加条目
     private ListView mListView;
+    private ReminderDbAdapter mDbAdapter;
+    private ReminderSimpleCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
