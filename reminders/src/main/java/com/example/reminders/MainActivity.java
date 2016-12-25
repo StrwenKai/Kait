@@ -1,11 +1,11 @@
 package com.example.reminders;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,14 +20,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.reminders_list_view);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.reminders_row, R.id.row_text, new String[]{
-                "first record", "second record", "third record", "第四"});
-        //第一个参数表示当前Activity的Context对象
-    /*Adapter还需要知道使用哪个布局，以及使用布局中那些字段来显示行数据，要满足要求，
-      则需要同时传入布局及其中的TextView的Id
-     最后一个参数是对应列表中每个条目的字符串数组*/
-        mListView.setAdapter(arrayAdapter);
+        mListView.setDivider(null);
+        mDbAdapter=new ReminderDbAdapter(this);
+        mDbAdapter.open();
 
+
+        Cursor cursor=mDbAdapter.fetchAllReminders();
+
+        String[] from=new String[]{ReminderDbAdapter.COL_CONTENT};
+
+        int[] to=new int[]{R.id.row_text};
+
+        mCursorAdapter=new ReminderSimpleCursorAdapter(MainActivity.this,R.layout.reminders_row
+        ,cursor,from,to,0);
+      //现在游标适配器(controller)更新了db数据库(model)的数据到ListView的view上的数据即试图变了
+
+        mListView.setAdapter(mCursorAdapter);
     }
 
     @Override

@@ -12,7 +12,9 @@ import android.util.Log;
  * Created by Administrator on 2016/12/24.
  */
 class ReminderDbAdapter {
-    public static class DatabaseHelper extends SQLiteOpenHelper {
+
+
+    private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
@@ -20,57 +22,63 @@ class ReminderDbAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.w(TAG, DATABASE_CREATE);
-            db.execSQL(DATABASE_CREATE);
+            db.execSQL(DATABASE_CREATE);//执行一个SQL语句
+            //显示创建数据库的时候错误
+            /*原来是DATABASE_CREATE创建数据库的语句错误了写的时候粗心*/
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Downgrade database from  version" + oldVersion + "to" +
+            Log.w(TAG, "Upgrading database from  version" + oldVersion + "to" +
                     newVersion + ",which will destroy all old  data");
             db.execSQL("DROP TABLE IF EXISTS" + TABLE_NAME);
+
             onCreate(db);
         }
     }
-
-        public static final String COL_ID = "id";
+       //列名
+        public static final String COL_ID = "_id";
         public static final String COL_CONTENT = "content";
         public static final String COL_IMPORTANT = "important";
-
+       //索引
         public static final int INDEX_ID = 0;
         public static final int INDEX_CONTENT = INDEX_ID + 1;
-        public static final int INDEX_IMPORTENT = INDEX_ID + 2;
-
-        public static final String TAG = "RemindersDbAdapter";
+        public static final int INDEX_IMPORTANT = INDEX_ID + 2;
+        //用于日志
+        private static final String TAG = "RemindersDbAdapter（log)";
 
         private DatabaseHelper mDbHelper;
         private SQLiteDatabase mDb;
 
-        private static final String DATABASE_NAME = "dba_remder";
-        private static final String TABLE_NAME = "tbl_remdrs";
-        private static final int DATABASE_VERSION = 1;
+        private static final String DATABASE_NAME = "dba_remder";//数据库名
+        private static final String TABLE_NAME = "tbl_remdrs";//主表名
+        private static final int DATABASE_VERSION = 1;//版本号
 
-        private Context mContext;
+        private final Context mContext;
 
-        public static final String DATABASE_CREATE = "CREATE TABLE if exits" + TABLE_NAME +
-                "(" + COL_ID + "INTEGER PRIMARY KEY autioncrement," + COL_CONTENT + "TEXT,"
-                + COL_IMPORTANT + "INTEGER);";
+        private static final String DATABASE_CREATE =
+                "CREATE TABLE if not exists " + TABLE_NAME +
+                " ( " + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COL_CONTENT + " TEXT, " +
+                        COL_IMPORTANT + " INTEGER );";
 
         /*
-        * 如何使用DatabaseHelper来打开关闭数据库
+        * 如何使用DatabaseHelper  来打开关闭数据库
         * 构造函数保存了一个Context实例
         * close()方法使用助手类来关闭数据库
         * */
-        public void ReminderDbAdapter(Context context) {
+        public ReminderDbAdapter(Context context) {
             this.mContext = context;
+
         }
 
-        //open
+        //open 初始化助手类并用来获取数据库的实例
         public void open() throws SQLException {
             mDbHelper = new DatabaseHelper(mContext);
             mDb = mDbHelper.getWritableDatabase();
         }
 
-        //close
+        //close用来关闭数据库
         public void close() {
             if (mDbHelper != null) {
                 mDbHelper.close();
@@ -99,22 +107,29 @@ class ReminderDbAdapter {
 
         //读取
         public Reminder fetchReminderById(int id) {
-            Cursor cursor = mDb.query(TABLE_NAME, new String[]{COL_ID, COL_CONTENT, COL_IMPORTANT}, COL_ID + "=?",
-                    new String[]{String.valueOf(id)}, null, null, null, null);
+            Cursor cursor = mDb.query(TABLE_NAME, new String[]{
+                    COL_ID, COL_CONTENT, COL_IMPORTANT},
+                    COL_ID + "=?",
+                    new String[]{String.valueOf(id)},
+                    null, null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
 
+            }else {
+                cursor.close();
             }
             return new Reminder(
                     cursor.getInt(INDEX_ID),
                     cursor.getString(INDEX_CONTENT),
-                    cursor.getInt(INDEX_IMPORTENT)
+                    cursor.getInt(INDEX_IMPORTANT)
             );
         }
 
         public Cursor fetchAllReminders() {
-            Cursor mCursor = mDb.query(TABLE_NAME,
-                    new String[]{COL_ID, COL_CONTENT, COL_IMPORTANT}, null, null, null, null, null);
+            Cursor mCursor = mDb.query(TABLE_NAME,new String[]{COL_ID,
+                    COL_CONTENT, COL_IMPORTANT},
+                    null, null, null, null,null
+            );
             if (mCursor != null) {
                 mCursor.moveToFirst();
             }
