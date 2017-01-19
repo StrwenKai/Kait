@@ -24,18 +24,32 @@ public class MainActivity extends AppCompatActivity {
         mDbAdapter=new ReminderDbAdapter(this);
         mDbAdapter.open();
 
+        if (savedInstanceState==null) {
+            insertSomeReminders();
+        }
 
         Cursor cursor=mDbAdapter.fetchAllReminders();
-
         String[] from=new String[]{ReminderDbAdapter.COL_CONTENT};
-
         int[] to=new int[]{R.id.row_text};
-
         mCursorAdapter=new ReminderSimpleCursorAdapter(MainActivity.this,R.layout.reminders_row
         ,cursor,from,to,0);
       //现在游标适配器(controller)更新了db数据库(model)的数据到ListView的view上的数据即试图变了
-
         mListView.setAdapter(mCursorAdapter);
+        //执行ＳＱＬ语句创建文本
+        //添加示例
+
+    }
+
+    private void insertSomeReminders() {
+        mDbAdapter.deleteAllReminders();
+        mDbAdapter.createReminder("示例1", true);
+        mDbAdapter.createReminder("示例2",false);
+        mDbAdapter.createReminder("示例3",false);
+        mDbAdapter.createReminder("示例4",true);
+        mDbAdapter.createReminder("示例5",false);
+        mDbAdapter.createReminder("示例6",false);
+        mDbAdapter.createReminder("示例7",true);
+        mDbAdapter.createReminder("示例8",false);
     }
 
     @Override

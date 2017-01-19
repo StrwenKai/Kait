@@ -29,8 +29,6 @@ public class ReminderSimpleCursorAdapter extends SimpleCursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.colImp=cursor.getColumnIndexOrThrow(toString());
-
             holder.colImp=cursor.getColumnIndexOrThrow(ReminderDbAdapter.COL_IMPORTANT);
             holder.listTab = view.findViewById(R.id.row_tab);
             view.setTag(holder);
