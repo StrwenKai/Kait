@@ -7,6 +7,9 @@
     <color name="white">#ffffff</color>
     <color name="green">#FF0AED0A</color>
     <color name="orange">#FFFDE001</color>
+    <color name="light_grey">#bababa</color>
+    <color name="black">#000000</color>
+    <color name="blue">#ff1118ff</color>
 </resources>
 
 
